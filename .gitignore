@@ -10,3 +10,6 @@ data/
 *.sqlite
 *.sqlite3
 real-email-samples/
+tasks
+*.log
+artifacts/screenshots/
