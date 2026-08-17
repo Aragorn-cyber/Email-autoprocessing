@@ -42,6 +42,7 @@ class DeepSeekLanguageModel(LanguageModelClient):
             "才将 category_name 设为其他，并在 category_suggestion 中提出一个真正的新类别。"
             "link_summaries 是数组，每项包含原样 url 和不超过 30 个汉字的用途摘要；"
             "忽略退订、追踪像素和无用户价值的链接。"
+            "summary 必须覆盖读者行动或决策所需的全部关键事实（具体时间、地点、要求、截止、后果等）；邮件若含明确时间、地点或行动要求，必须写进 summary，不得只给概括。"
             f"可选二级分类：{', '.join(category_names)}。"
         )
         body_text = email.body_text
@@ -49,7 +50,7 @@ class DeepSeekLanguageModel(LanguageModelClient):
             body_text = body_text[: self.settings.llm_body_char_limit] + "……（正文过长，已截断）"
         user_prompt = json.dumps(
             {
-                "instruction": "请分析这封邮件。semantic_score 为 0 到 5 的整数。若判断为可丢弃，discard_reason_summary 必须是面向用户的简短原因摘要，否则可为 null。",
+                "instruction": "请分析这封邮件。semantic_score 为 0 到 5 的整数。若判断为可丢弃，discard_reason_summary 必须是面向用户的简短原因摘要，否则可为 null。若邮件含时间/地点/要求/后果/链接等具体信息，summary 须逐项写明，使读者无需打开原文。",
                 "email": {
                     "subject": email.subject,
                     "sender_name": email.sender_name,
