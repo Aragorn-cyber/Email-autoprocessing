@@ -1,4 +1,6 @@
 .env
+.env.example
+需求.md
 .venv/
 __pycache__/
 *.py[cod]
@@ -10,6 +12,3 @@ data/
 *.sqlite
 *.sqlite3
 real-email-samples/
-tasks
-*.log
-artifacts/screenshots/
