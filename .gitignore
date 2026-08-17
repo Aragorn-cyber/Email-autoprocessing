@@ -1,5 +1,7 @@
 .env
 .env.example
+tasks
+tests
 需求.md
 .venv/
 __pycache__/
@@ -12,3 +14,6 @@ data/
 *.sqlite
 *.sqlite3
 real-email-samples/
+*.log
+artifacts/screenshots/
+.dsh-vision-toolkit/
