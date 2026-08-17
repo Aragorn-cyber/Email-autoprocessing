@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}重要邮件 · 邮件 AI 助手{% endblock %}
+{% block content %}
+<header class="page-heading list-heading"><div><p class="kicker">Important list</p><h1>重要邮件</h1><p class="lede">你手动标记为重要的邮件。标记只保存在本地，不修改邮箱服务器状态；移除后不影响原邮件。</p></div><span class="large-counter">{{ total_items }}</span></header>
+<section class="read-management ruled-panel">
+  <div class="section-bar"><div><span class="section-index">A</span><h2>已标记邮件</h2></div><span class="section-note">按标记时间倒序</span></div>
+  {% for item in items %}<article class="read-row" data-important-row="{{ item.email.id }}">
+    <div class="read-date"><strong>{{ item.record.marked_at.strftime('%m.%d') }}</strong><span>{{ item.record.marked_at.strftime('%H:%M') }}</span></div>
+    <div><p class="mail-entry-meta"><span>{{ item.source_name }} / {{ item.analysis.category_name }}</span><span>{{ item.email.sender_address }}</span></p><h3><a href="/mail/{{ item.email.id }}">{{ item.email.subject }}</a></h3><p>{{ item.analysis.summary }}</p></div>
+    <button type="button" class="button quiet-button" data-remove-important="{{ item.email.id }}">移除标记</button>
+  </article>{% else %}<div class="empty-state"><span>ALL CLEAR</span><h3>还没有重要邮件。</h3><p>在报告中对某封邮件点击「标记为重要」，它就会出现在这里。</p></div>{% endfor %}
+  {% if has_previous or has_next %}<nav class="pagination" aria-label="重要邮件分页">{% if has_previous %}<a href="/important-mails?page={{ page - 1 }}">← 上一页</a>{% endif %}<span>第 {{ page }} 页</span>{% if has_next %}<a href="/important-mails?page={{ page + 1 }}">下一页 →</a>{% endif %}</nav>{% endif %}
+</section>
+{% endblock %}

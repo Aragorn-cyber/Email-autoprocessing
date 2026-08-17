@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}报告 #{{ report.id }} · 邮件 AI 助手{% endblock %}
+{% block content %}
+<header class="report-masthead">
+  <div class="report-number"><span>REPORT</span><strong>#{{ report.id }}</strong></div>
+  <div class="report-title"><p class="kicker">扫描结果 · 按重要性排序</p><h1>未读邮件报告</h1><p class="report-lead">{{ snapshot.overview }}</p><p class="date-range"><span class="date-label">接收范围</span>{{ snapshot.time_range.earliest|datetime_zh }} <span>→</span> {{ snapshot.time_range.latest|datetime_zh }}</p></div>
+</header>
+
+<section class="report-stats wide-stats" aria-label="邮件数量">
+  <div class="stat important-stat"><strong>{{ snapshot.counts.important }}</strong><span>需要亲自审核</span></div>
+  <div class="stat"><strong>{{ snapshot.counts.general }}</strong><span>一般信息</span></div>
+  <div class="stat"><strong>{{ snapshot.counts.discardable }}</strong><span>可丢弃</span></div>
+</section>
+
+<section class="mail-ledger">
+  <div class="section-bar"><div><span class="section-index">A</span><h2>筛选结果</h2></div><span class="section-actions">{% if snapshot.ordered_items %}<button type="button" class="button quiet-button section-action" data-mark-read-section>一键已读</button>{% endif %}<span class="section-note">重要优先 · 同级按接收时间倒序</span></span></div>
+  {% for item in snapshot.ordered_items or [] %}
+  <article class="mail-entry {{ item.importance }}" data-mail-entry="{{ item.email_id }}">
+    <div class="importance-rail"><span>{{ "%02d"|format(loop.index) }}</span></div>
+    <div class="mail-entry-body">
+      <div class="mail-entry-meta"><span class="importance-label">{{ "重要" if item.importance == "important" else "一般" }}</span><span>{{ item.source_name }} / {{ item.category_name }}</span><span>接收于 {{ (item.received_at or item.sent_at)|datetime_zh }}</span></div>
+      <h3><a href="{{ item.mail_url }}">{{ item.subject }}</a></h3>
+      <p class="mail-summary">{{ item.summary }}</p>
+      {% if item.links %}<ul class="link-summary-list" aria-label="邮件提及链接">{% for link in item.links %}<li><span>链接</span><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.summary }}</a></li>{% endfor %}</ul>{% endif %}
+      <div class="mail-entry-footer"><span class="entry-actions"><span>{{ item.sender_address }} · {{ item.account_names|join("、") }}</span>{% if item.email_id in marked_read_ids %}<span class="read-badge">已加入本地已读</span>{% else %}<button type="button" class="text-button" data-mark-read="{{ item.email_id }}">加入本地已读</button>{% endif %}{% if item.email_id in marked_important_ids %}<span class="important-badge">重要邮件</span>{% else %}<button type="button" class="text-button" data-mark-important="{{ item.email_id }}">标记为重要</button>{% endif %}</span></div>
+    </div>
+  </article>
+  {% else %}<div class="empty-state compact-empty"><span>INBOX ZERO</span><h3>本次没有需要展示的邮件。</h3><p>被标为本地已读的邮件不会重复出现在报告中。</p></div>{% endfor %}
+</section>
+
+<details class="discard-section">
+  <summary><span class="summary-title"><small>B</small>可丢弃邮件</span><span class="summary-actions">{% if snapshot.discardable %}<button type="button" class="button quiet-button section-action" data-mark-read-section>一键已读</button>{% endif %}<strong>{{ snapshot.discardable|length }}</strong></span></summary>
+  <div class="discard-list">
+    {% for item in snapshot.discardable %}
+    <article class="discard-entry" data-mail-entry="{{ item.email_id }}">
+      <div><span class="discard-index">{{ "%02d"|format(loop.index) }}</span></div>
+      <div><h3><a href="{{ item.mail_url }}">{{ item.subject }}</a></h3><p>{{ item.summary }}</p><p class="reason-line"><strong>归类原因</strong>{{ item.discard_reason_summary }}</p>
+        {% if item.links %}<ul class="link-summary-list">{% for link in item.links %}<li><span>链接</span><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.summary }}</a></li>{% endfor %}</ul>{% endif %}
+        <div class="mail-entry-footer"><span class="entry-actions"><span>{{ item.sender_address }} · {{ item.account_names|join("、") }}</span>{% if item.email_id in marked_read_ids %}<span class="read-badge">已加入本地已读</span>{% else %}<button type="button" class="text-button" data-mark-read="{{ item.email_id }}">加入本地已读</button>{% endif %}{% if item.email_id in marked_important_ids %}<span class="important-badge">重要邮件</span>{% else %}<button type="button" class="text-button" data-mark-important="{{ item.email_id }}">标记为重要</button>{% endif %}</span></div>
+      </div>
+    </article>
+    {% else %}<p class="empty-row">本次没有可丢弃邮件。</p>{% endfor %}
+  </div>
+</details>
+
+{% if snapshot.failed_accounts %}<section class="error-panel"><p class="kicker">扫描未完全成功</p><h2>以下邮箱没有完成</h2>{% for item in snapshot.failed_accounts %}<p>{{ item.account }}：{{ item.error }}</p>{% endfor %}</section>{% endif %}
+{% endblock %}

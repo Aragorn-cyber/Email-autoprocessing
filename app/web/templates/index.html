@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading dashboard-heading">
+  <div>
+    <p class="kicker">每日邮件简报</p>
+    <h1>把注意力留给真正需要处理的事。</h1>
+    <p class="lede">读取时间窗内的未读邮件，完成来源归一、重要性评分与摘要。邮箱内容不会被移动或标为已读。</p>
+  </div>
+  <form id="scan-form" class="scan-console">
+    <label for="window-days">扫描时间窗</label>
+    <div class="scan-controls">
+      <div class="number-field"><input id="window-days" type="number" min="1" max="90" value="{{ default_window_days }}"><span>天</span></div>
+      <button type="submit" class="button primary-button"><span>扫描新邮件</span><span aria-hidden="true">↗</span></button>
+    </div>
+    <p id="scan-status" class="form-status" aria-live="polite">同步执行，请保持页面开启</p>
+  </form>
+</section>
+
+<section class="dashboard-grid" aria-label="工作台概览">
+  <article class="current-report ruled-panel">
+    <div class="section-bar"><div><span class="section-index">A</span><h2>当前报告</h2></div>{% if report %}<a href="/reports/{{ report.id }}">查看全文 →</a>{% endif %}</div>
+    {% if report %}
+      <div class="report-stats">
+        <div class="stat important-stat"><strong>{{ snapshot.counts.important }}</strong><span>重要</span></div>
+        <div class="stat"><strong>{{ snapshot.counts.general }}</strong><span>一般</span></div>
+        <div class="stat"><strong>{{ snapshot.counts.discardable }}</strong><span>可丢弃</span></div>
+      </div>
+      <p class="report-overview">{{ snapshot.overview }}</p>
+      <div class="report-meta"><span>报告 #{{ report.id }}</span><span>{{ snapshot.time_range.earliest|datetime_zh }} — {{ snapshot.time_range.latest|datetime_zh }}</span></div>
+    {% else %}
+      <div class="empty-state"><span>NO REPORT YET</span><h3>完成首次扫描后，这里会出现简报。</h3><p>先添加邮箱账号，再点击右上方的扫描按钮。</p></div>
+    {% endif %}
+  </article>
+
+  <aside class="side-summary">
+    <article class="mini-panel ink-panel"><p class="kicker">本地已读</p><strong>{{ read_count }}</strong><p>封邮件已从后续报告中隐藏，可随时恢复。</p><a href="/read-mails">管理名单 →</a></article>
+    <article class="mini-panel"><div class="section-bar compact"><div><span class="section-index">B</span><h2>最近报告</h2></div><a href="/reports">全部</a></div>
+      <ol class="report-list compact-list">
+        {% for item in recent_reports %}<li><a href="/reports/{{ item.id }}"><span>报告 #{{ item.id }}</span><time>{{ item.created_at.strftime('%m.%d %H:%M') }}</time></a></li>{% else %}<li class="muted-row">暂无历史记录</li>{% endfor %}
+      </ol>
+    </article>
+  </aside>
+</section>
+
+<section class="accounts-section ruled-panel">
+  <div class="section-bar"><div><span class="section-index">C</span><h2>邮箱账号</h2></div><button class="text-button" type="button" data-toggle="account-form">＋ 添加账号</button></div>
+  <div class="account-list">
+    {% for account in accounts %}
+    <form class="account-row account-update-form" data-account-id="{{ account.id }}">
+      <div class="account-identity"><span class="account-avatar">{{ account.name[:1] }}</span><div><strong>{{ account.name }}</strong><small>{{ account.email_address }}</small></div></div>
+      <label>时间窗<div class="inline-number"><input name="scan_window_days" type="number" min="1" max="90" value="{{ account.scan_window_days }}"><span>天</span></div></label>
+      <label class="switch-label"><input name="is_active" type="checkbox" {% if account.is_active %}checked{% endif %}><span class="switch" aria-hidden="true"></span><span>启用</span></label>
+      <button class="button quiet-button" type="submit">保存</button>
+    </form>
+    {% else %}<div class="empty-row">还没有账号。添加一个支持授权码的普通 IMAP 邮箱。</div>{% endfor %}
+  </div>
+  <form id="account-form" class="account-form hidden">
+    <div class="form-heading"><div><p class="kicker">New mailbox</p><h3>添加邮箱账号</h3></div><button type="button" class="close-button" data-toggle="account-form" aria-label="关闭添加账号表单">×</button></div>
+    <div class="form-grid">
+      <label>账号名称<input name="name" placeholder="例如：主邮箱" required></label>
+      <label>邮箱地址<input name="email_address" type="email" placeholder="name@example.com" required></label>
+      <label>IMAP 主机<input name="imap_host" placeholder="imap.example.com" required></label>
+      <label>端口<input name="imap_port" type="number" value="993" required></label>
+      <label>登录用户名<input name="username" placeholder="通常是完整邮箱地址" required></label>
+      <label>授权码环境变量<input name="password_env_name" placeholder="EMAIL_MAIN_PASSWORD" required></label>
+      <label>文件夹<input name="folder" value="INBOX" required></label>
+      <label>默认时间窗<input name="scan_window_days" type="number" value="7" min="1" max="90" required></label>
+    </div>
+    <button type="submit" class="button primary-button">保存账号</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ email.subject }} · 邮件 AI 助手{% endblock %}
+{% block content %}
+<article class="mail-detail-page">
+  <header class="detail-heading">
+    <div><p class="kicker">{{ source_name }} / {{ analysis.category_name }}</p><h1>{{ email.subject }}</h1><p class="detail-sender">{{ email.sender_name or email.sender_address }} <span>{{ email.sender_address }}</span></p></div>
+    <div class="detail-actions"><span class="importance-chip {{ analysis.importance }}">{{ {"important":"重要", "general":"一般", "discardable":"可丢弃"}[analysis.importance] }}</span>{% if is_marked_read %}<button class="button quiet-button" data-remove-read="{{ email.id }}">恢复为未读</button>{% else %}<button class="button primary-button" data-mark-read="{{ email.id }}">标为已读</button>{% endif %}</div>
+  </header>
+  <div class="detail-meta-grid"><div><span>接收时间</span><strong>{{ email.received_at|datetime_zh }}</strong></div><div><span>发送时间</span><strong>{{ email.sent_at|datetime_zh }}</strong></div><div><span>账号</span><strong>{{ email.account.name }}</strong></div><div><span>附件</span><strong>{{ email.attachment_count }} 个</strong></div></div>
+  <section class="analysis-spread">
+    <div class="analysis-main"><p class="section-caption">AI 摘要</p><h2>{{ analysis.summary }}</h2><p>{{ analysis.ai_reason }}</p></div>
+    <dl class="score-card"><div><dt>规则分</dt><dd>{{ analysis.rule_score }}</dd></div><div><dt>语义分</dt><dd>{{ analysis.semantic_score }}</dd></div><div class="total"><dt>总分</dt><dd>{{ analysis.total_score }}</dd></div></dl>
+  </section>
+  {% if analysis.discard_reason_summary %}<section class="reason-callout"><span>为什么可丢弃</span><p>{{ analysis.discard_reason_summary }}</p></section>{% endif %}
+  {% if link_summaries %}<section class="detail-section"><div class="section-bar"><div><span class="section-index">A</span><h2>邮件提及链接</h2></div></div><ul class="detail-links">{% for link in link_summaries %}<li><span>{{ "%02d"|format(loop.index) }}</span><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"><strong>{{ link.summary }}</strong><small>{{ link.url }}</small></a><span aria-hidden="true">↗</span></li>{% endfor %}</ul></section>{% endif %}
+  {% if attachments %}<section class="detail-section"><div class="section-bar"><div><span class="section-index">B</span><h2>附件记录</h2></div></div><p>{{ attachments|join("、") }}</p></section>{% endif %}
+  <section class="detail-section body-section"><div class="section-bar"><div><span class="section-index">C</span><h2>邮件正文</h2></div></div><pre class="mail-body">{{ email.body_text }}</pre></section>
+</article>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}已读管理 · 邮件 AI 助手{% endblock %}
+{% block content %}
+<header class="page-heading list-heading"><div><p class="kicker">Local read list</p><h1>已读管理</h1><p class="lede">这里的“已读”只属于本助手。邮件服务器仍保持原状；移除后，只要邮箱里仍是未读，下次扫描就会重新出现。</p></div><span class="large-counter">{{ total_items }}</span></header>
+<section class="read-management ruled-panel">
+  <div class="section-bar"><div><span class="section-index">A</span><h2>已隐藏邮件</h2></div><span class="section-actions">{% if items %}<button type="button" class="button quiet-button section-action" data-remove-all-read>一键移出</button>{% endif %}<span class="section-note">按加入时间倒序</span></span></div>
+  {% for item in items %}<article class="read-row" data-read-row="{{ item.email.id }}">
+    <div class="read-date"><strong>{{ item.record.marked_at.strftime('%m.%d') }}</strong><span>{{ item.record.marked_at.strftime('%H:%M') }}</span></div>
+    <div><p class="mail-entry-meta"><span>{{ item.source_name }} / {{ item.analysis.category_name }}</span><span>{{ item.email.sender_address }}</span></p><h3><a href="/mail/{{ item.email.id }}">{{ item.email.subject }}</a></h3><p>{{ item.analysis.summary }}</p></div>
+    <button type="button" class="button quiet-button" data-remove-read="{{ item.email.id }}">移出名单</button>
+  </article>{% else %}<div class="empty-state"><span>ALL CLEAR</span><h3>本地已读名单为空。</h3><p>在报告或邮件详情中点击“标为已读”，邮件就会出现在这里。</p></div>{% endfor %}
+  {% if has_previous or has_next %}<nav class="pagination" aria-label="已读邮件分页">{% if has_previous %}<a href="/read-mails?page={{ page - 1 }}">← 上一页</a>{% endif %}<span>第 {{ page }} 页</span>{% if has_next %}<a href="/read-mails?page={{ page + 1 }}">下一页 →</a>{% endif %}</nav>{% endif %}
+</section>
+{% endblock %}

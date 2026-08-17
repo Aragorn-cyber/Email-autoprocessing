@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}历史报告 · 邮件 AI 助手{% endblock %}
+{% block content %}
+<header class="page-heading list-heading"><div><p class="kicker">Archive</p><h1>历史报告</h1><p class="lede">每次扫描都是独立快照。旧报告不会随之后的规则、分类或已读状态发生变化。</p></div><span class="large-counter">{{ report_items|length }}</span></header>
+<section class="archive-list">
+  <div class="archive-header"><span>编号 / 创建时间</span><span>邮件构成</span><span>摘要</span><span></span></div>
+  {% for item in report_items %}<article class="archive-row">
+    <div><strong>#{{ item.report.id }}</strong><time>{{ item.report.created_at|datetime_zh }}</time></div>
+    <div class="mini-metrics"><span class="important-dot">{{ item.snapshot.counts.important }} 重要</span><span>{{ item.snapshot.counts.general }} 一般</span><span>{{ item.snapshot.counts.discardable }} 可丢弃</span></div>
+    <p>{{ item.snapshot.overview }}</p><a href="/reports/{{ item.report.id }}" aria-label="查看报告 {{ item.report.id }}">查看 →</a>
+  </article>{% else %}<div class="empty-state"><span>EMPTY ARCHIVE</span><h3>还没有报告记录。</h3></div>{% endfor %}
+</section>
+{% endblock %}

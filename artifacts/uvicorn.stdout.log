@@ -1,0 +1,16 @@
+INFO:     127.0.0.1:7579 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:9600 - "GET /?deliverable=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:9600 - "GET /static/app.css?v=20260814-3 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:1546 - "GET /static/app.js?v=20260814-3 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:1546 - "GET /reports/8?deliverable=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:1546 - "GET /reports?deliverable=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:1546 - "GET /read-mails?deliverable=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:1546 - "GET /mail/5?deliverable=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:1546 - "GET /?deliverable=mobile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:1546 - "GET /reports/8?deliverable=mobile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:8292 - "POST /api/read-mails/5 HTTP/1.1" 201 Created
+INFO:     127.0.0.1:5711 - "GET /read-mails HTTP/1.1" 200 OK
+INFO:     127.0.0.1:5711 - "GET /static/app.css?v=20260814-3 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:13599 - "GET /static/app.js?v=20260814-3 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:10549 - "GET /read-mails HTTP/1.1" 200 OK
+INFO:     127.0.0.1:6369 - "DELETE /api/read-mails/5 HTTP/1.1" 204 No Content
